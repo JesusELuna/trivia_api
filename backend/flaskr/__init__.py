@@ -125,7 +125,7 @@ def create_app(test_config=None):
         questions = Question.query.filter(
             Question.category == category_id).all()
 
-        if(questions is None):
+        if len(questions) == 0:
             abort(404)
 
         formatted_questions = [question.format() for question in questions]
@@ -181,5 +181,13 @@ def create_app(test_config=None):
             'error': 400,
             'message': 'bad request'
         }), 400
+
+    @app.errorhandler(405)
+    def method_not_allowed(error):
+        return jsonify({
+            'success': False,
+            'error': 405,
+            'message': 'method not allowed'
+        }), 405
 
     return app

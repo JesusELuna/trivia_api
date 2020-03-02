@@ -80,7 +80,7 @@ def create_app(test_config=None):
                 'deleted': question_id
             })
 
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/questions', methods=['POST'])
@@ -99,7 +99,7 @@ def create_app(test_config=None):
                 'success': True,
                 'created': question.id,
             })
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/questions/search', methods=['POST'])
@@ -143,7 +143,8 @@ def create_app(test_config=None):
             quiz_category = body.get('quiz_category', None)
             previous_questions = body.get('previous_questions', None)
 
-            questions = Question.query.filter(~Question.id.in_(previous_questions)).all() \
+            questions = Question.query.filter(
+                ~Question.id.in_(previous_questions)).all() \
                 if quiz_category['id'] == 0 \
                 else Question.query.filter(
                 ~Question.id.in_(previous_questions),
@@ -155,7 +156,7 @@ def create_app(test_config=None):
                 'success': True,
                 'question': question
             })
-        except:
+        except Exception:
             abort(422)
 
     @app.errorhandler(404)

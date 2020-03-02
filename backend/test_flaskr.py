@@ -39,7 +39,8 @@ class TriviaTestCase(unittest.TestCase):
 
     """
     TODO
-    Write at least one test for each test for successful operation and for expected errors.
+    Write at least one test for each test for successful operation and for
+    expected errors.
     """
 
     def test_get_categories(self):
@@ -128,17 +129,33 @@ class TriviaTestCase(unittest.TestCase):
         self.assertTrue(data['total_questions'])
         self.assertTrue(len(data['questions']))
 
-    def quizzes(self):
+    def test_404_get_cuestions_by_non_existence_category(self):
+        res = self.client().get('/categories/1000/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'resource not found')
+
+    def test_quizzes(self):
         res = self.client().post('/quizzes',
-                                 json={"previous_questions": [], "quiz_category": {"type": "Science", "id": 1}})
+                                 json={"previous_questions": [],
+                                       "quiz_category": {"type": "Science",
+                                                         "id": 1}})
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
-        self.assertTrue(data['total_questions'])
-        self.assertTrue(len(data['questions']))
+        self.assertIsNotNone(data['question'])
+
+    def test_422_no_data_given_quizzes(self):
+        res = self.client().post('/quizzes')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data['success'], False)
+        self.assertEqual(data['message'], 'unprocessable')
 
 
-        # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
